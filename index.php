@@ -1,454 +1,92 @@
 <?php
-/**
- * ==========================================================
- * SMART ACADEMIC PROFILE
- * Dashboard
- * ==========================================================
- */
+// index.php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-session_start();
+require_once 'config/db.php';
+require_once 'helpers/semantic.php';
 
-if (!isset($_SESSION['entered'])) {
-    header("Location: welcome.php");
-    exit;
-}
+// Ambil data profil utama dari database
+$profil = $pdo->query("SELECT * FROM profil LIMIT 1")->fetch();
+$skills = $pdo->query("SELECT * FROM skill")->fetchAll();
 
-require_once 'config/config.php';
-require_once 'config/database.php';
-require_once 'config/helper.php';
-
-$pageTitle = "Dashboard";
-
-/*
-|--------------------------------------------------------------------------
-| Statistik
-|--------------------------------------------------------------------------
-*/
-
-$totalSkill = countData("skill");
-
-$totalPendidikan = countData("pendidikan");
-
-$totalOrganisasi = countData("organisasi");
-
-$totalProject = countData("project");
-
-/*
-|--------------------------------------------------------------------------
-| Profil
-|--------------------------------------------------------------------------
-*/
-
-$profil = selectOne("SELECT * FROM profil LIMIT 1");
-
-/*
-|--------------------------------------------------------------------------
-| Featured Project
-|--------------------------------------------------------------------------
-*/
-
-$featured = selectOne("SELECT * FROM project
-WHERE featured=1
-ORDER BY id DESC
-LIMIT 1");
-
-include 'includes/header.php';
-include 'includes/sidebar.php';
-include 'includes/navbar.php';
-
+// Generate dokumen JSON-LD secara otomatis untuk disematkan pada tag head [cite: 90, 123]
+$jsonLD = getJSONLD($pdo);
 ?>
-
-<div class="container-fluid">
-
-<div class="page-title">
-
-Dashboard
-
-</div>
-
-<!-- ========================= -->
-
-<div class="row">
-
-<div class="col-lg-3">
-
-<div class="stat-card bg-green">
-
-<h5>Total Skill</h5>
-
-<h2 class="counter"
-data-target="<?= $totalSkill ?>">
-
-<?= $totalSkill ?>
-
-</h2>
-
-</div>
-
-</div>
-
-<div class="col-lg-3">
-
-<div class="stat-card bg-blue">
-
-<h5>Pendidikan</h5>
-
-<h2 class="counter"
-data-target="<?= $totalPendidikan ?>">
-
-<?= $totalPendidikan ?>
-
-</h2>
-
-</div>
-
-</div>
-
-<div class="col-lg-3">
-
-<div class="stat-card bg-orange">
-
-<h5>Organisasi</h5>
-
-<h2 class="counter"
-data-target="<?= $totalOrganisasi ?>">
-
-<?= $totalOrganisasi ?>
-
-</h2>
-
-</div>
-
-</div>
-
-<div class="col-lg-3">
-
-<div class="stat-card bg-purple">
-
-<h5>Project</h5>
-
-<h2 class="counter"
-data-target="<?= $totalProject ?>">
-
-<?= $totalProject ?>
-
-</h2>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- ========================= -->
-
-<div class="row mt-4">
-
-<div class="col-lg-4">
-
-<div class="card profile-card">
-
-<div class="card-body">
-
-<img src="assets/uploads/<?= $profil['foto'] ?? 'default.png'; ?>">
-
-<h2>
-
-<?= e($profil['nama'] ?? '-') ?>
-
-</h2>
-
-<p>
-
-<?= e($profil['program_studi'] ?? '-') ?>
-
-</p>
-
-<hr>
-
-<p>
-
-<b>NIM</b>
-
-<br>
-
-<?= e($profil['nim'] ?? '-') ?>
-
-</p>
-
-<p>
-
-<b>Universitas</b>
-
-<br>
-
-<?= e($profil['universitas'] ?? '-') ?>
-
-</p>
-
-<a href="pages/profil.php"
-
-class="btn btn-success w-100">
-
-Lihat Profil
-
-</a>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="col-lg-8">
-
-<div class="card">
-
-<div class="card-header">
-
-Tentang Website
-
-</div>
-
-<div class="card-body">
-
-<p>
-
-<b>Smart Academic Profile</b>
-
-merupakan website profil akademik mahasiswa
-yang dibangun menggunakan
-
-PHP Native,
-
-MySQL,
-
-Bootstrap,
-
-PDO,
-
-serta menerapkan konsep
-
-Semantic Web
-
-menggunakan
-
-Schema.org,
-
-JSON-LD,
-
-RDF,
-
-OWL,
-
-Linked Data,
-
-DBpedia,
-
-dan SPARQL.
-
-</p>
-
-<p>
-
-Website ini dibuat untuk memenuhi
-
-Ujian Akhir Semester
-
-mata kuliah
-
-Semantic Web.
-
-</p>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- ========================= -->
-
-<div class="row mt-4">
-
-<div class="col-lg-12">
-
-<div class="card">
-
-<div class="card-header">
-
-Featured Project
-
-</div>
-
-<div class="card-body">
-
-<?php if($featured){ ?>
-
-<div class="project-card featured">
-
-<div class="content">
-
-<h3>
-
-<?= e($featured['judul']) ?>
-
-</h3>
-
-<p>
-
-<?= e($featured['deskripsi']) ?>
-
-</p>
-
-<hr>
-
-<p>
-
-<b>Teknologi</b>
-
-<br>
-
-<?= e($featured['teknologi']) ?>
-
-</p>
-
-<p>
-
-<b>Tahun</b>
-
-<?= e($featured['tahun']) ?>
-
-</p>
-
-<a
-
-href="<?= e($featured['github']) ?>"
-
-target="_blank"
-
-class="btn btn-dark">
-
-Github
-
-</a>
-
-<a
-
-href="<?= e($featured['demo']) ?>"
-
-target="_blank"
-
-class="btn btn-success">
-
-Demo
-
-</a>
-
-</div>
-
-</div>
-
-<?php }else{ ?>
-
-<div class="alert alert-warning">
-
-Belum ada Featured Project.
-
-</div>
-
-<?php } ?>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- ========================= -->
-
-<div class="row mt-4">
-
-<div class="col-lg-12">
-
-<div class="card">
-
-<div class="card-header">
-
-Implementasi Semantic Web
-
-</div>
-
-<div class="card-body">
-
-<div class="row text-center">
-
-<div class="col-md-2">
-
-<h1>🌐</h1>
-
-<p>Schema.org</p>
-
-</div>
-
-<div class="col-md-2">
-
-<h1>🔗</h1>
-
-<p>Linked Data</p>
-
-</div>
-
-<div class="col-md-2">
-
-<h1>📚</h1>
-
-<p>OWL</p>
-
-</div>
-
-<div class="col-md-2">
-
-<h1>🧠</h1>
-
-<p>SPARQL</p>
-
-</div>
-
-<div class="col-md-2">
-
-<h1>🗂</h1>
-
-<p>DBpedia</p>
-
-</div>
-
-<div class="col-md-2">
-
-<h1>📄</h1>
-
-<p>JSON-LD</p>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<?php
-
-include 'includes/footer.php';
-
-?>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title><?= htmlspecialchars($profil['nama']) ?> - Academic Node</title>
+    <link rel="stylesheet" href="assets/style.css">
+    
+    <script type="application/ld+json">
+    <?= $jsonLD; ?>
+    </script>
+</head>
+<body class="grid-bg">
+
+    <?php include 'navbar.php'; ?>
+
+    <header style="max-width: 1300px; margin: 40px auto; width: 95%; display: flex; justify-content: space-between; align-items: center; gap: 40px; flex-wrap: wrap;">
+        <div style="max-width: 750px; flex: 1; min-width: 300px;">
+            <div style="color: var(--neon-acidic); font-size: 0.85rem; letter-spacing: 0.15em; margin-bottom: 12px; font-weight: 600;">✨ UAS SEMANTIK WEB • ILMU KOMPUTER</div>
+            <h1 style="font-size: 4.5rem; line-height: 1.0; margin: 0 0 24px 0;" class="text-acidic"><?= htmlspecialchars($profil['nama']) ?></h1>
+            <p style="color: oklch(0.72 0.05 150); font-size: 1.1rem; line-height: 1.6; margin-bottom: 30px;">
+                [cite_start]Profil akademik berbasis <strong>Semantic Web</strong>[cite: 10]. [cite_start]Setiap data direpresentasikan sebagai hubungan <em>Subject–Predicate–Object</em> [cite: 12, 55] [cite_start]terstruktur menggunakan kosakata Schema.org JSON-LD [cite: 12, 35] [cite_start]agar dapat dipahami dan dibaca oleh mesin pencari[cite: 15, 63].
+            </p>
+            
+            <div style="display: flex; gap: 10px; margin-bottom: 40px; flex-wrap: wrap;">
+                <span style="background: oklch(0.14 0.03 155); padding: 8px 16px; border-radius: 4px; font-size: 0.85rem; border: 1px solid var(--border-thick); font-weight: bold;"><?= htmlspecialchars($profil['nim']) ?></span>
+                <span style="background: oklch(0.14 0.03 155); padding: 8px 16px; border-radius: 4px; font-size: 0.85rem; border: 1px solid var(--border-thick); font-weight: bold;"><?= htmlspecialchars($profil['program_studi']) ?></span>
+                <span style="background: oklch(0.14 0.03 155); padding: 8px 16px; border-radius: 4px; font-size: 0.85rem; border: 1px solid var(--border-thick); font-weight: bold;"><?= htmlspecialchars($profil['universitas']) ?></span>
+            </div>
+            
+            <div style="display: flex; gap: 16px;">
+                <a href="relasi.php" class="neon-btn">Mulai Jelajahi ↗</a>
+                <a href="schema.php" style="color: white; padding: 12px 24px; text-decoration: none; border-radius: var(--radius-brutal); background: oklch(0.14 0.03 155); border: 1px solid var(--border-thick); font-weight: bold;">JSON-LD Schema &lt;/&gt;</a>
+            </div>
+        </div>
+        
+        <div style="position: relative; border: 3px solid var(--neon-acidic); border-radius: var(--radius-brutal); padding: 12px; box-shadow: 0 0 40px oklch(0.85 0.28 135 / 20%); background: var(--dark-panel);">
+            <div style="width: 280px; height: 320px; border-radius: var(--radius-brutal); overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                <img src="assets/images/profil.jpeg" alt="Foto <?= htmlspecialchars($profil['nama']) ?>" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <div style="position: absolute; bottom: -10px; left: -10px; background: #000; border: 1px solid var(--neon-acidic); padding: 6px 14px; border-radius: var(--radius-brutal); font-size: 0.75rem; font-family: monospace;">
+                @semantic-node<br><span style="color: var(--neon-acidic)">2026 • active</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="asymmetric-grid" style="margin-top: 50px; margin-bottom: 60px;">
+        <div class="panel">
+            <h3 style="margin-top: 0; font-size: 1.6rem;" class="text-acidic">👤 Biodata Mahasiswa</h3>
+            <p style="line-height: 1.7; color: oklch(0.85 0.02 150); font-size: 0.95rem; text-align: justify;"><?= htmlspecialchars($profil['bio']) ?></p>
+            
+            <table style="width: 100%; border-collapse: collapse; margin-top: 25px; font-size: 0.9rem;" cellpadding="10">
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="color: oklch(0.5 0.01 160); width: 30%;">Fakultas</td><td>: <?= htmlspecialchars($profil['fakultas']) ?></td></tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="color: oklch(0.5 0.01 160);">Email Kampus</td><td style="color: var(--neon-acidic);">: <?= htmlspecialchars($profil['email']) ?></td></tr>
+                <tr><td style="color: oklch(0.5 0.01 160);">Domisili</td><td>: <?= htmlspecialchars($profil['domisili']) ?></td></tr>
+            </table>
+        </div>
+        
+        <div class="panel">
+            <h3 style="margin-top: 0; font-size: 1.6rem;" class="text-acidic">📊 Keterampilan Sistem</h3>
+            <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 20px;">
+                <?php foreach($skills as $sk): ?>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 6px;">
+                            <span>⚡ <?= htmlspecialchars($sk['nama']) ?> <span style="color: oklch(0.5 0.01 160); font-size: 0.75rem;">[<?= htmlspecialchars($sk['kategori']) ?>]</span></span>
+                            <span style="color: var(--neon-acidic); font-weight: bold;"><?= isset($sk['persentase']) ? $sk['persentase'] . '%' : '90%' ?></span>
+                        </div>
+                        <div style="width: 100%; background: rgba(255,255,255,0.05); height: 6px; border-radius: 2px;">
+                            <div style="width: <?= isset($sk['persentase']) ? $sk['persentase'] : '90' ?>%; background: var(--neon-acidic); height: 100%; box-shadow: 0 0 10px var(--neon-acidic);"></div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
