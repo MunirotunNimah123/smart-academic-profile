@@ -33,7 +33,7 @@ $jsonLD = getJSONLD($pdo);
             <div style="color: var(--neon-acidic); font-size: 0.85rem; letter-spacing: 0.15em; margin-bottom: 12px; font-weight: 600;">✨ UAS SEMANTIK WEB • ILMU KOMPUTER</div>
             <h1 style="font-size: 4.5rem; line-height: 1.0; margin: 0 0 24px 0;" class="text-acidic"><?= htmlspecialchars($profil['nama']) ?></h1>
             <p style="color: oklch(0.72 0.05 150); font-size: 1.1rem; line-height: 1.6; margin-bottom: 30px;">
-                [cite_start]Profil akademik berbasis <strong>Semantic Web</strong>[cite: 10]. [cite_start]Setiap data direpresentasikan sebagai hubungan <em>Subject–Predicate–Object</em> [cite: 12, 55] [cite_start]terstruktur menggunakan kosakata Schema.org JSON-LD [cite: 12, 35] [cite_start]agar dapat dipahami dan dibaca oleh mesin pencari[cite: 15, 63].
+                Selamat datang di platform Smart Academic Profile. Profil ini memanfaatkan teknologi Semantic Web dengan pemodelan data Subject–Predicate–Object (JSON-LD Schema.org). Sistem ini mentransformasi informasi akademik konvensional menjadi jaringan data terstruktur (knowledge graph) yang siap dibaca oleh mesin.
             </p>
             
             <div style="display: flex; gap: 10px; margin-bottom: 40px; flex-wrap: wrap;">
